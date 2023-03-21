@@ -74,6 +74,7 @@ int main(){
 
     question q = generateQuestion(10);
     int qLength = q.question.length();
+    int questionDifficulty = 10; // Range of numbers
     while(true){
 
         int inputChar = ' ';
@@ -121,7 +122,8 @@ int main(){
             getch();
             clear();
             refresh();
-            q = generateQuestion(10);
+            questionDifficulty *= 1.2; // Increase the difficulty
+            q = generateQuestion(questionDifficulty);
             qLength = q.question.length();
         }else{
             std::string incorrect = "Incorrect! Press any key to retry the question";
@@ -131,7 +133,6 @@ int main(){
             clear();
             refresh();
         }
-
     }
 
     endwin();
