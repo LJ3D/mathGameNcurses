@@ -56,6 +56,7 @@ question generateQuestion(int range){
 }
 
 const int qWinWidth = 50;
+const int aWinWidth = 50;
 
 int main(){
     initscr();
@@ -66,24 +67,29 @@ int main(){
     WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
     refresh();
     box(questionBox, '*', '*');
-    wrefresh(questionBox);
-    touchwin(questionBox);
+
+    WINDOW* answerBox = newwin(3, qWinWidth, LINES/2, (COLS/2)-(qWinWidth/2));
+    refresh();
+    box(answerBox, '*', '*');
 
     while(true){
         question q = generateQuestion(10);
         int qLength = q.question.length();
-        std::string clearQuestionBox(qWinWidth-2, ' ');
 
         int inputChar = ' ';
         std::string inputStr;
 
         do{
+            wclear(questionBox);
             box(questionBox, '*', '*');
-            mvwprintw(questionBox, 1, 1, clearQuestionBox.c_str());
+            wclear(answerBox);
+            box(answerBox, '*', '*');
+            
             mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
-            mvprintw(0, 0, inputStr.c_str());
+            mvwprintw(answerBox, 1, (aWinWidth/2)-(inputStr.length()/2), inputStr.c_str());
 
             wrefresh(questionBox);
+            wrefresh(answerBox);
             
             inputChar = getch();
             inputStr += inputChar;
