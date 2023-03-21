@@ -7,6 +7,7 @@ struct question{
     int answer;
 };
 
+// I determines the range of the numbers
 // Generates a question that looks like this:
 // 1 + 2 = ?
 // ? + 2 = 3
@@ -54,8 +55,24 @@ question generateQuestion(int range){
     return {question, answer};
 }
 
+const int qWinWidth = 50;
 
 int main(){
+
+    initscr();
+    noecho();
+    cbreak();
+    curs_set(0);
+    
+    WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
+
+    box(questionBox, '*', '*');
+    
+    touchwin(questionBox);
+    wrefresh(questionBox);
+    getchar();
+
+    /*
     // Print 100 random questions and answers
     for (int i = 0; i < 100; i++){
         question q = generateQuestion(i);
@@ -63,5 +80,8 @@ int main(){
         std::cout << q.answer << std::endl;
         std::cout << "====================" << std::endl;
     }
+    */
+
+    endwin();
     return 0;
 }
