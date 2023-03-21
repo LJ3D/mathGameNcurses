@@ -72,19 +72,18 @@ int main(){
     refresh();
     box(answerBox, '*', '*');
 
+    question q = generateQuestion(10);
+    int qLength = q.question.length();
     while(true){
-        question q = generateQuestion(10);
-        int qLength = q.question.length();
 
         int inputChar = ' ';
         std::string inputStr;
-
         do{
             wclear(questionBox);
             box(questionBox, '*', '*');
             wclear(answerBox);
             box(answerBox, '*', '*');
-            
+
             mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
             mvwprintw(answerBox, 1, (aWinWidth/2)-(inputStr.length()/2), inputStr.c_str());
 
@@ -92,8 +91,46 @@ int main(){
             wrefresh(answerBox);
             
             inputChar = getch();
-            inputStr += inputChar;
+            if(inputChar == 127){
+                if(inputStr.length() > 0){
+                    inputStr.pop_back();
+                }
+            }else{
+                inputStr += inputChar;
+            }
         }while(inputChar != '\n');
+
+
+        clear();
+        int answerInt;
+        try{
+            answerInt = std::stoi(inputStr);
+        }catch(...){
+            std::string invalidInput = "Invalid input";
+            mvprintw(LINES/2, (COLS/2)-(invalidInput.length()/2), invalidInput.c_str());
+            refresh();
+            getch();
+            continue;
+        }
+
+
+        if(answerInt == q.answer){
+            std::string correct = "Correct! Press any key to continue to the next question";
+            mvprintw(LINES/2, (COLS/2)-(correct.length()/2), correct.c_str());
+            refresh();
+            getch();
+            clear();
+            refresh();
+            q = generateQuestion(10);
+            qLength = q.question.length();
+        }else{
+            std::string incorrect = "Incorrect! Press any key to retry the question";
+            mvprintw(LINES/2, (COLS/2)-(incorrect.length()/2), incorrect.c_str());
+            refresh();
+            getch();
+            clear();
+            refresh();
+        }
 
     }
 
