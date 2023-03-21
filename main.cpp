@@ -60,8 +60,11 @@ question generateQuestion(int range){
 
 #define qWinWidth 50
 #define aWinWidth 50
+#define scoreWinWidth 15
 
 int main(){
+    srand(time(NULL));
+    
     initscr();
     noecho();
     cbreak();
@@ -75,6 +78,11 @@ int main(){
     refresh();
     box(answerBox, '*', '*');
 
+    WINDOW* scorebox = newwin(3, scoreWinWidth, 1, 1);
+    refresh();
+    box(scorebox, '*', '*');
+
+    int score = 0;
     int questionDifficulty = 10; // Range of numbers
     question q = generateQuestion(questionDifficulty);
     int qLength = q.question.length();
@@ -87,12 +95,17 @@ int main(){
             box(questionBox, '*', '*');
             wclear(answerBox);
             box(answerBox, '*', '*');
+            wclear(scorebox);
+            box(scorebox, '*', '*');
 
             mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
             mvwprintw(answerBox, 1, (aWinWidth/2)-(inputStr.length()/2), inputStr.c_str());
+            std::string scoreStr = "Score: " + std::to_string(score);
+            mvwprintw(scorebox, 1, (scoreWinWidth/2)-(scoreStr.length()/2), scoreStr.c_str());
 
             wrefresh(questionBox);
             wrefresh(answerBox);
+            wrefresh(scorebox);
             
             inputChar = getch();
             if(inputChar == 127){
@@ -126,6 +139,7 @@ int main(){
             questionDifficulty *= 1.2; // Increase the difficulty
             q = generateQuestion(questionDifficulty);
             qLength = q.question.length();
+            score++;
         }else{
             std::string incorrect = "Incorrect! Press any key to retry the question";
             mvprintw(LINES/2, (COLS/2)-(incorrect.length()/2), incorrect.c_str());
