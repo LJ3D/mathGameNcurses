@@ -22,6 +22,9 @@ question generateQuestion(int range){
     int num2 = rand() % range;
 
     // Generate a random number from 0 to 2 to decide where to put the ?
+    // 0 = ? <op> x = y
+    // 1 = x <op> ? = y
+    // 2 = x <op> y = ?
     int where = rand() % 3;
 
     // Generate a random number from 0 to 1 to decide what operation to use
@@ -31,14 +34,14 @@ question generateQuestion(int range){
 
     // Generate the question
     std::string question;
-    std::string op = (operation==0)?"+":"-";
+    std::string operationStr = (operation==0)?"+":"-";
     int eqResult = (operation==0)?num1 + num2:num1 - num2;
     if (where == 0){
-        question = "? " + op + " " + std::to_string(num2) + " = " + std::to_string(eqResult);
+        question = "? " + operationStr + " " + std::to_string(num2) + " = " + std::to_string(eqResult);
     } else if (where == 1){
-        question = std::to_string(num1) + " " + op + " ? = " + std::to_string(eqResult);
+        question = std::to_string(num1) + " " + operationStr + " ? = " + std::to_string(eqResult);
     } else {
-        question = std::to_string(num1) + " " + op + " " + std::to_string(num2) + " = ?";
+        question = std::to_string(num1) + " " + operationStr + " " + std::to_string(num2) + " = ?";
     }
 
     // Generate the answer
@@ -55,8 +58,8 @@ question generateQuestion(int range){
     return {question, answer};
 }
 
-const int qWinWidth = 50;
-const int aWinWidth = 50;
+#define qWinWidth 50
+#define aWinWidth 50
 
 int main(){
     initscr();
@@ -72,9 +75,9 @@ int main(){
     refresh();
     box(answerBox, '*', '*');
 
-    question q = generateQuestion(10);
-    int qLength = q.question.length();
     int questionDifficulty = 10; // Range of numbers
+    question q = generateQuestion(questionDifficulty);
+    int qLength = q.question.length();
     while(true){
 
         int inputChar = ' ';
@@ -107,14 +110,12 @@ int main(){
         try{
             answerInt = std::stoi(inputStr);
         }catch(...){
-            std::string invalidInput = "Invalid input";
+            std::string invalidInput = "Invalid input! Press any key to retry the question";
             mvprintw(LINES/2, (COLS/2)-(invalidInput.length()/2), invalidInput.c_str());
             refresh();
             getch();
             continue;
         }
-
-
         if(answerInt == q.answer){
             std::string correct = "Correct! Press any key to continue to the next question";
             mvprintw(LINES/2, (COLS/2)-(correct.length()/2), correct.c_str());
