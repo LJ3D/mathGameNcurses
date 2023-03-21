@@ -67,10 +67,19 @@ int main(){
     WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
 
     box(questionBox, '*', '*');
-    
+
+    question q = generateQuestion(10);
+    int qLength = q.question.length();
+    mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
+    wrefresh(questionBox);
+
+    getchar();
+
+    /*
     touchwin(questionBox);
     wrefresh(questionBox);
     getchar();
+    */
 
     /*
     // Print 100 random questions and answers
