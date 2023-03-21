@@ -62,14 +62,27 @@ question generateQuestion(int range){
 #define aWinWidth 50
 #define scoreWinWidth 15
 
+#define GREEN 1
+#define RED 2
+#define PURPLE 3
+#define WHITE 4
+
 int main(){
     srand(time(NULL));
-    
+
     initscr();
     noecho();
     cbreak();
     curs_set(0);
+
+    start_color();
+    init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(RED, COLOR_RED, COLOR_BLACK);
+    init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
+
     
+
     WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
     refresh();
     box(questionBox, '*', '*');
@@ -124,14 +137,18 @@ int main(){
             answerInt = std::stoi(inputStr);
         }catch(...){
             std::string invalidInput = "Invalid input! Press any key to retry the question";
+            wattr_on(stdscr, COLOR_PAIR(PURPLE), NULL);
             mvprintw(LINES/2, (COLS/2)-(invalidInput.length()/2), invalidInput.c_str());
+            wattr_off(stdscr, COLOR_PAIR(PURPLE), NULL);
             refresh();
             getch();
             continue;
         }
         if(answerInt == q.answer){
             std::string correct = "Correct! Press any key to continue to the next question";
+            wattr_on(stdscr, COLOR_PAIR(GREEN), NULL);
             mvprintw(LINES/2, (COLS/2)-(correct.length()/2), correct.c_str());
+            wattr_off(stdscr, COLOR_PAIR(GREEN), NULL);
             refresh();
             getch();
             clear();
@@ -142,7 +159,9 @@ int main(){
             score++;
         }else{
             std::string incorrect = "Incorrect! Press any key to retry the question";
+            wattr_on(stdscr, COLOR_PAIR(RED), NULL);
             mvprintw(LINES/2, (COLS/2)-(incorrect.length()/2), incorrect.c_str());
+            wattr_off(stdscr, COLOR_PAIR(RED), NULL);
             refresh();
             getch();
             clear();
