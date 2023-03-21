@@ -58,38 +58,38 @@ question generateQuestion(int range){
 const int qWinWidth = 50;
 
 int main(){
-
     initscr();
     noecho();
     cbreak();
     curs_set(0);
     
     WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
-
+    refresh();
     box(questionBox, '*', '*');
-
-    question q = generateQuestion(10);
-    int qLength = q.question.length();
-    mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
     wrefresh(questionBox);
-
-    getchar();
-
-    /*
     touchwin(questionBox);
-    wrefresh(questionBox);
-    getchar();
-    */
 
-    /*
-    // Print 100 random questions and answers
-    for (int i = 0; i < 100; i++){
-        question q = generateQuestion(i);
-        std::cout << q.question << std::endl;
-        std::cout << q.answer << std::endl;
-        std::cout << "====================" << std::endl;
+    while(true){
+        question q = generateQuestion(10);
+        int qLength = q.question.length();
+        std::string clearQuestionBox(qWinWidth-2, ' ');
+
+        int inputChar = ' ';
+        std::string inputStr;
+
+        do{
+            box(questionBox, '*', '*');
+            mvwprintw(questionBox, 1, 1, clearQuestionBox.c_str());
+            mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
+            mvprintw(0, 0, inputStr.c_str());
+
+            wrefresh(questionBox);
+            
+            inputChar = getch();
+            inputStr += inputChar;
+        }while(inputChar != '\n');
+
     }
-    */
 
     endwin();
     return 0;
