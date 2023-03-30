@@ -17,6 +17,7 @@ std::string to_string_with_precision(const T a_value, const int n = 3){
 struct question{
     std::string question;
     int answer;
+    bool isDivision = false;
 };
 
 // I determines the range of the numbers
@@ -29,9 +30,22 @@ question generateQuestion(int range){
         range = 2;
     }
 
-    // Generate two random numbers from 0 to range
-    int num1 = rand() % range;
-    int num2 = rand() % range;
+    // Generate a random number from 0 to 3 to decide what operation to use
+    // 0 = +
+    // 1 = -
+    // 2 = *
+    // 3 = /
+    int operation = rand() % 4;
+
+    // If the question is multiplication, reduce the range by dividing it by 3
+    if(operation == 2){
+        range /= 3;
+    }
+
+    // Generate two random numbers from 1 to range
+    int num1 = rand() % range + 1;
+    int num2 = rand() % range + 1;
+
 
     // Generate a random number from 0 to 2 to decide where to put the ?
     // 0 = ? <op> x = y
@@ -39,15 +53,33 @@ question generateQuestion(int range){
     // 2 = x <op> y = ?
     int where = rand() % 3;
 
-    // Generate a random number from 0 to 1 to decide what operation to use
-    // 0 = +
-    // 1 = -
-    int operation = rand() % 2;
+    // If the question is division, make sure the numbers are divisible (num1 must always be bigger than num2)
+    if(operation == 3){
+        if(num1 < num2){
+            int temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+        // Make num2 quite small
+        num2 /= 4;
+        num2 += 2; // Make sure num2 is at least 2
+        num1 += 2; // Also need to add 2 to num1 to ensure its still more than num2
+        // Also force the ? to always be placed at the end
+        where = 2;
+    }
 
     // Generate the question
     std::string question;
-    std::string operationStr = (operation==0)?"+":"-";
-    int eqResult = (operation==0)?num1 + num2:num1 - num2;
+    std::string operationStr;
+    int eqResult;
+    if(operation < 2){
+        eqResult = (operation==0)?num1 + num2:num1 - num2;
+        operationStr = (operation==0)?"+":"-";
+    }else{
+        eqResult = (operation==2)?num1 * num2:num1 / num2;
+        operationStr = (operation==2)?"*":"/";
+    }
+
     if (where == 0){
         question = "? " + operationStr + " " + std::to_string(num2) + " = " + std::to_string(eqResult);
     } else if (where == 1){
@@ -67,7 +99,7 @@ question generateQuestion(int range){
     }
 
     // Return the question and answer
-    return {question, answer};
+    return {question, answer, operation==3};
 }
 
 #define qWinWidth 50
@@ -125,6 +157,12 @@ int main(){
             mvwprintw(answerBox, 1, (aWinWidth/2)-(inputStr.length()/2), inputStr.c_str());
             std::string scoreStr = "Score: " + to_string_with_precision(score, 2);
             mvwprintw(scorebox, 1, (scoreWinWidth/2)-(scoreStr.length()/2), scoreStr.c_str());
+            if(q.isDivision){
+                mvprintw(LINES-1, 0, "Integer division, ignore the remainder!");
+            }
+
+            // for debug, print the answer
+            mvprintw(LINES-3, 0, "Answer: %d", q.answer);
 
             wrefresh(questionBox);
             wrefresh(answerBox);
