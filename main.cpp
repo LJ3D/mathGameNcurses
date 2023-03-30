@@ -1,6 +1,18 @@
 #include <ncurses.h>
 #include <string>
 #include <iostream>
+#include <sstream>
+
+/*
+    Used for displaying the score
+*/
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 3){
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return std::move(out).str();
+}
 
 struct question{
     std::string question;
@@ -60,7 +72,8 @@ question generateQuestion(int range){
 
 #define qWinWidth 50
 #define aWinWidth 50
-#define scoreWinWidth 15
+#define scoreWinWidth 20
+#define difficultyMultiplier 1.2
 
 #define GREEN 1
 #define RED 2
@@ -81,8 +94,6 @@ int main(){
     init_pair(PURPLE, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
 
-    
-
     WINDOW* questionBox = newwin(3, qWinWidth, LINES/4, (COLS/2)-(qWinWidth/2));
     refresh();
     box(questionBox, '*', '*');
@@ -95,12 +106,11 @@ int main(){
     refresh();
     box(scorebox, '*', '*');
 
-    int score = 0;
+    float score = 0;
     int questionDifficulty = 10; // Range of numbers
     question q = generateQuestion(questionDifficulty);
     int qLength = q.question.length();
     while(true){
-
         int inputChar = ' ';
         std::string inputStr;
         do{
@@ -113,7 +123,7 @@ int main(){
 
             mvwprintw(questionBox, 1, (qWinWidth/2)-(qLength/2), q.question.c_str());
             mvwprintw(answerBox, 1, (aWinWidth/2)-(inputStr.length()/2), inputStr.c_str());
-            std::string scoreStr = "Score: " + std::to_string(score);
+            std::string scoreStr = "Score: " + to_string_with_precision(score, 2);
             mvwprintw(scorebox, 1, (scoreWinWidth/2)-(scoreStr.length()/2), scoreStr.c_str());
 
             wrefresh(questionBox);
@@ -129,7 +139,6 @@ int main(){
                 inputStr += inputChar;
             }
         }while(inputChar != '\n');
-
 
         clear();
         int answerInt;
@@ -153,10 +162,10 @@ int main(){
             getch();
             clear();
             refresh();
-            questionDifficulty *= 1.2; // Increase the difficulty
+            questionDifficulty *= difficultyMultiplier; // Increase the difficulty
             q = generateQuestion(questionDifficulty);
             qLength = q.question.length();
-            score++;
+            score += (float)questionDifficulty/10.0f;
         }else{
             std::string incorrect = "Incorrect! Press any key to retry the question";
             wattr_on(stdscr, COLOR_PAIR(RED), NULL);
