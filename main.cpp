@@ -162,7 +162,7 @@ int main(){
             }
 
             // for debug, print the answer
-            mvprintw(LINES-3, 0, "Answer: %d", q.answer);
+            // mvprintw(LINES-3, 0, "(DEBUG) Answer: %d", q.answer);
 
             wrefresh(questionBox);
             wrefresh(answerBox);
